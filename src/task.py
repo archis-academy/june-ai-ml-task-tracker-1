@@ -13,3 +13,14 @@ class Task:
         self.subtasks = []
         self.comments = []
         self.tags = []
+
+    def get_info(self):
+        info = (
+            f"Id: {self.id}\n"
+            f"Title: {self.title}\n"
+            f"Description: {self.description}\n"
+            f"Due Date: {self.due_date}\n"
+            f"Priority: {self.priority}\n"
+            f"Status: {self.status}\n"
+            f"User ID: {self.user_id}\n")
+        return info
