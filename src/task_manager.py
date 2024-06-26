@@ -20,7 +20,6 @@ class TaskManager:
                 cancelled_tasks.append(task)
             else:
                 print('Invalid status:', task.status)
-
         return pending_tasks, completed_tasks, cancelled_tasks
 
     def get_all_info(self):
