@@ -2,8 +2,9 @@ class TaskManager:
     def __init__(self):
         self.tasks = {}  # key value
         self.next_id = 1
+    
     def sort_by_creation_date(self):
-        self.tasks.sort(key=lambda task: task.creation_date)
+        self.tasks.sort(key=lambda task: task.due_date)
 
     def sort_by_status(self):
         pending_tasks = []
