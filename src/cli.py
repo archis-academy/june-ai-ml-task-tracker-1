@@ -24,6 +24,8 @@ class CLI:
                 self.sort_tasks()
             elif command == "filter_tasks":
                 self.filter_tasks()
+            elif command == "search_tasks":
+                self.search_tasks()
             elif command == "update_task":
                 self.update_task()
             elif command == "exit":
@@ -100,6 +102,18 @@ class CLI:
             print("Logged out successfully.")
         else:
             print("No user is currently logged in.")
+
+    def search_tasks(self):
+        if not self.current_user:
+            print("You need to log in first.")
+            return
+        keyword = input("Enter keyword to search: ").strip()
+        matched_tasks = self.task_manager.search_tasks(keyword)
+        if matched_tasks:
+            for task in matched_tasks:
+                print(task.get_info())
+        else:
+            print("No tasks found matching the keyword.")
 
 if __name__ == "__main__":
     task_manager = TaskManager()

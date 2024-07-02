@@ -38,3 +38,10 @@ class TaskManager:
     def filter_by_priority(self, priority):
         return [task for task in self.tasks.values() if task.get_priority() == priority]
 
+
+    def search_tasks(self, keyword):
+        matched_tasks = []
+        for task in self.tasks.values():
+            if keyword.lower() in task.title.lower() or keyword.lower() in task.description.lower():
+                matched_tasks.append(task)
+        return matched_tasks
