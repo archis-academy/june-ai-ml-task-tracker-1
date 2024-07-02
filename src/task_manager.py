@@ -1,3 +1,5 @@
+from task import Task
+
 class TaskManager:
     def __init__(self):
         self.tasks = {}  # key value
@@ -25,3 +27,9 @@ class TaskManager:
     def get_all_info(self):
         for task in self.tasks:
             print(task.get_info())
+
+    def add_task(self, title, description, status="Pending", priority="Normal", due_date=None, user_id=None, category=None):
+        task = Task(self.next_id, title, description, status, priority, due_date, user_id, category)
+        self.tasks[self.next_id] = task
+        self.next_id += 1
+        return task
