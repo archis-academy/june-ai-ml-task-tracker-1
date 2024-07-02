@@ -25,3 +25,7 @@ class TaskManager:
     def get_all_info(self):
         for task in self.tasks:
             print(task.get_info())
+
+    def filter_by_category(self, category):
+        filtered_tasks = [task for task in self.tasks.values() if task.category == category]
+        return filtered_tasks
