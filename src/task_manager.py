@@ -28,3 +28,21 @@ class TaskManager:
 
     def display_all_tasks(self):
         return list(self.tasks.values()) 
+    
+    def update_task(self, task_id, title=None, description=None, status=None, priority=None, due_date=None, category=None):
+        task = self.tasks.get(task_id)
+        if not task:
+            return False
+        if title is not None:
+            task.title = title
+        if description is not None:
+            task.description = description
+        if status is not None:
+            task.status = status
+        if priority is not None:
+            task.priority = priority
+        if due_date is not None:
+            task.due_date = due_date
+        if category is not None:
+            task.category = category 
+        return True  
