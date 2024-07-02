@@ -25,3 +25,6 @@ class TaskManager:
     def get_all_info(self):
         for task in self.tasks:
             print(task.get_info())
+
+    def display_all_tasks(self):
+        return list(self.tasks.values()) 
