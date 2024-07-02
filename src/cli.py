@@ -9,7 +9,7 @@ class CLI:
 
     def run(self):
         while True:
-            command = input("Enter command (register/login/logout/add_task/display_tasks/update_task/exit): ").strip().lower()
+            command = input("Enter command (register/login/logout/add_task/display_tasks/sort_tasks/filter_tasks/update_task/exit): ").strip().lower()
             if command == "register":
                 self.register()
             elif command == "login":
@@ -20,6 +20,10 @@ class CLI:
                 self.add_task()
             elif command == "display_tasks":
                 self.display_tasks()
+            elif command == "sort_tasks":
+                self.sort_tasks()
+            elif command == "filter_tasks":
+                self.filter_tasks()
             elif command == "update_task":
                 self.update_task()
             elif command == "exit":
@@ -33,20 +37,44 @@ class CLI:
             return
         title = input("Enter task title: ").strip()
         description = input("Enter task description: ").strip()
+        priority = input("Enter task priority (High/Medium/Low): ").strip().capitalize()
         category = input("Enter task category: ").strip()
-        task = self.task_manager.add_task(title, description, user_id=self.current_user.id, category=category)
+        task = self.task_manager.add_task(title, description, priority=priority, user_id=self.current_user.id, category=category)
         print(f"Task added: {task.get_info()}")
 
     def display_tasks(self):
         if not self.current_user:
             print("You need to log in first.")
             return
-        tasks = self.task_manager.display_all_tasks(self.current_user.id)
+        tasks = self.task_manager.tasks.values()
         if tasks:
             for task in tasks:
                 print(task.get_info())
         else:
             print("No tasks available.")
+
+    def sort_tasks(self):
+        if not self.current_user:
+            print("You need to log in first.")
+            return
+        sorted_tasks = self.task_manager.sort_by_priority()
+        if sorted_tasks:
+            for task in sorted_tasks:
+                print(task.get_info())
+        else:
+            print("No tasks available to sort.")
+
+    def filter_tasks(self):
+        if not self.current_user:
+            print("You need to log in first.")
+            return
+        priority = input("Enter priority to filter (High/Medium/Low): ").strip().capitalize()
+        filtered_tasks = self.task_manager.filter_by_priority(priority)
+        if filtered_tasks:
+            for task in filtered_tasks:
+                print(task.get_info())
+        else:
+            print(f"No tasks found with priority {priority}.")
 
     def update_task(self):
         if not self.current_user:
@@ -56,7 +84,7 @@ class CLI:
         title = input("Enter new task title (or leave blank to keep current): ").strip() or None
         description = input("Enter new task description (or leave blank to keep current): ").strip() or None
         status = input("Enter new task status (or leave blank to keep current): ").strip() or None
-        priority = input("Enter new task priority (or leave blank to keep current): ").strip() or None
+        priority = input("Enter new task priority (or leave blank to keep current): ").strip().capitalize() or None
         due_date = input("Enter new task due date (or leave blank to keep current): ").strip() or None
         category = input("Enter new task category (or leave blank to keep current): ").strip() or None
         
@@ -73,3 +101,8 @@ class CLI:
         else:
             print("No user is currently logged in.")
 
+if __name__ == "__main__":
+    task_manager = TaskManager()
+    user_manager = UserManager()
+    cli = CLI(task_manager, user_manager)
+    cli.run()

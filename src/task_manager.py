@@ -32,3 +32,9 @@ class TaskManager:
             task.category = category
         
         return True
+    def sort_by_priority(self):
+        return sorted(self.tasks.values(), key=lambda task: task.get_priority())
+
+    def filter_by_priority(self, priority):
+        return [task for task in self.tasks.values() if task.get_priority() == priority]
+
