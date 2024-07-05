@@ -47,3 +47,21 @@ class Task:
 
     def mark_incomplete(self):
         self.status = "Pending"
+
+    def add_subtask(self, subtask):
+        self.subtasks.append(subtask)
+
+    def view_subtasks(self):
+        if self.subtasks:
+            print(f"Subtasks for Task '{self.title}':")
+            for subtask in self.subtasks:
+                print(subtask.get_info())
+        else:
+            print(f"No subtasks for Task '{self.title}'.")
+
+    def delete_subtask(self, subtask_id):
+        for subtask in self.subtasks:
+            if subtask.id == subtask_id:
+                self.subtasks.remove(subtask)
+                return True
+        return False
