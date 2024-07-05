@@ -1,5 +1,6 @@
 from task_manager import TaskManager
 from user_manager import UserManager
+from datetime import datetime as dt, timedelta
 
 class CLI:
     def __init__(self, task_manager, user_manager):
@@ -9,7 +10,7 @@ class CLI:
 
     def run(self):
         while True:
-            command = input("Enter command (register/login/logout/add_task/display_tasks/sort_tasks/filter_tasks/search_tasks/filter_status/filter_category/share_task/add_comment/update_task/exit): ").strip().lower()
+            command = input("Enter command (register/login/logout/add_task/display_tasks/sort_tasks/filter_tasks/search_tasks/filter_status/filter_category/share_task/add_comment/update_task/delete_task/mark_complete/mark_incomplete/archive_completed_tasks/display_archived_tasks/upcoming_tasks/overdue_tasks/task_counts/exit): ").strip().lower()
             if command == "register":
                 self.register()
             elif command == "login":
@@ -42,19 +43,49 @@ class CLI:
                 self.mark_complete()
             elif command == "mark_incomplete":
                 self.mark_incomplete()
+            elif command == "archive_completed_tasks":
+                self.archive_completed_tasks()
+            elif command == "display_archived_tasks":
+                self.display_archived_tasks()
             elif command == "upcoming_tasks":
                 self.show_upcoming_tasks()
             elif command == "overdue_tasks":
                 self.show_overdue_tasks()
-                self.show_overdue_tasks()
-            elif command == "tag_task":
-                self.tag_task()
-            elif command == "filter_by_tag":
-                self.filter_by_tag()
+            elif command == "task_counts":
+                self.display_task_counts()
             elif command == "exit":
                 break
             else:
                 print("Invalid command.")
+
+    def register(self):
+        username = input("Enter username: ").strip()
+        password = input("Enter password: ").strip()
+        user_id = len(self.user_manager.users) + 1
+        user = self.user_manager.register_user(user_id, username, password)
+        if user:
+            print(f"User '{username}' registered successfully.")
+        else:
+            print(f"Failed to register user '{username}'. Username may already be taken.")
+
+    def login(self):
+        if self.current_user:
+            print("You are already logged in.")
+            return
+        username = input("Enter username: ").strip()
+        password = input("Enter password: ").strip()
+        self.current_user = self.user_manager.authenticate_user(username, password)
+        if self.current_user:
+            print(f"Logged in as '{username}'.")
+        else:
+            print("Login failed. Invalid username or password.")
+
+    def logout(self):
+        if self.current_user:
+            self.current_user = None
+            print("Logged out successfully.")
+        else:
+            print("No user is currently logged in.")
 
     def add_task(self):
         if not self.current_user:
@@ -71,7 +102,7 @@ class CLI:
         if not self.current_user:
             print("You need to log in first.")
             return
-        tasks = self.task_manager.tasks.values()
+        tasks = self.task_manager.display_all_tasks(self.current_user.id)
         if tasks:
             for task in tasks:
                 print(task.get_info())
@@ -101,23 +132,47 @@ class CLI:
         else:
             print(f"No tasks found with priority {priority}.")
 
-    def update_task(self):
+    def search_tasks(self):
         if not self.current_user:
             print("You need to log in first.")
             return
-        task_id = int(input("Enter task ID: ").strip())
-        title = input("Enter new task title (or leave blank to keep current): ").strip() or None
-        description = input("Enter new task description (or leave blank to keep current): ").strip() or None
-        status = input("Enter new task status (or leave blank to keep current): ").strip() or None
-        priority = input("Enter new task priority (or leave blank to keep current): ").strip().capitalize() or None
-        due_date = input("Enter new task due date (or leave blank to keep current): ").strip() or None
-        category = input("Enter new task category (or leave blank to keep current): ").strip() or None
-        
-        updated = self.task_manager.update_task(task_id, title, description, status, priority, due_date, category)
-        if updated:
-            print("Task updated successfully.")
+        keyword = input("Enter keyword to search: ").strip()
+        matched_tasks = self.task_manager.search_tasks(keyword)
+        if matched_tasks:
+            for task in matched_tasks:
+                print(task.get_info())
         else:
-            print("Task not found.")
+            print("No tasks found matching the keyword.")
+
+    def filter_status(self):
+        if not self.current_user:
+            print("You need to log in first.")
+            return
+
+        status = input("Enter status to filter (Pending/Completed): ").strip().capitalize()
+        if status not in ["Pending", "Completed"]:
+            print("Invalid status. Please enter 'Pending' or 'Completed'.")
+            return
+        
+        filtered_tasks = [task for task in self.task_manager.tasks.values() if task.status == status]
+        if filtered_tasks:
+            print(f"Tasks with status '{status}':")
+            for task in filtered_tasks:
+                print(task.get_info())
+        else:
+            print(f"No tasks found with status '{status}'.")
+
+    def filter_category(self):
+        if not self.current_user:
+            print("You need to log in first.")
+            return
+        category = input("Enter category to filter: ").strip()
+        filtered_tasks = self.task_manager.filter_by_category(category)
+        if filtered_tasks:
+            for task in filtered_tasks:
+                print(task.get_info())
+        else:
+            print(f"No tasks found in category '{category}'.")
 
     def share_task(self):
         if not self.current_user:
@@ -147,36 +202,34 @@ class CLI:
         else:
             print("Task not found.")
 
+    def update_task(self):
+        if not self.current_user:
+            print("You need to log in first.")
+            return
+        task_id = int(input("Enter task ID: ").strip())
+        title = input("Enter new task title (or leave blank to keep current): ").strip() or None
+        description = input("Enter new task description (or leave blank to keep current): ").strip() or None
+        status = input("Enter new task status (or leave blank to keep current): ").strip() or None
+        priority = input("Enter new task priority (or leave blank to keep current): ").strip().capitalize() or None
+        due_date = input("Enter new task due date (or leave blank to keep current): ").strip() or None
+        category = input("Enter new task category (or leave blank to keep current): ").strip() or None
+        
+        updated = self.task_manager.update_task(task_id, title, description, status, priority, due_date, category)
+        if updated:
+            print("Task updated successfully.")
+        else:
+            print("Task not found.")
+
     def delete_task(self):
         if not self.current_user:
             print("You need to log in first.")
             return
         task_id = int(input("Enter task ID to delete: ").strip())
-        task = self.task_manager.tasks.get(task_id)
-        if not task:
+        success = self.task_manager.delete_task(task_id)
+        if success:
+            print(f"Task {task_id} deleted.")
+        else:
             print("Task not found.")
-            return
-        confirmation = input(f"Are you sure you want to delete task {task_id} ('{task.title}')? (yes/no): ").strip().lower()
-        if confirmation == 'yes':
-            success = self.task_manager.delete_task(task_id)
-            if success:
-                print(f"Task {task_id} deleted.")
-            else:
-                print("Task not found.")
-        else:
-            print("Deletion canceled.")
-
-    def search_tasks(self):
-        if not self.current_user:
-            print("You need to log in first.")
-            return
-        keyword = input("Enter keyword to search: ").strip()
-        matched_tasks = self.task_manager.search_tasks(keyword)
-        if matched_tasks:
-            for task in matched_tasks:
-                print(task.get_info())
-        else:
-            print("No tasks found matching the keyword.")
 
     def mark_complete(self):
         if not self.current_user:
@@ -202,6 +255,28 @@ class CLI:
         else:
             print("Task not found.")
 
+    def archive_completed_tasks(self):
+        if not self.current_user:
+            print("You need to log in first.")
+            return
+        archived_tasks = self.task_manager.archive_completed_tasks()
+        if archived_tasks:
+            print("Completed tasks archived successfully.")
+        else:
+            print("No completed tasks to archive.")
+
+    def display_archived_tasks(self):
+        if not self.current_user:
+            print("You need to log in first.")
+            return
+        archived_tasks = self.task_manager.get_archived_tasks()
+        if archived_tasks:
+            print("Archived Tasks:")
+            for task in archived_tasks:
+                print(task.get_info())
+        else:
+            print("No archived tasks.")
+
     def show_upcoming_tasks(self):
         if not self.current_user:
             print("You need to log in first.")
@@ -225,68 +300,13 @@ class CLI:
                 print(task.get_info())
         else:
             print("No overdue tasks.")
-    def tag_task(self):
-        if not self.current_user:
-            print("You need to log in first.")
-            return
-        task_id = int(input("Enter task ID to tag: ").strip())
-        tag = input("Enter tag to add: ").strip()
-        task = self.task_manager.tasks.get(task_id)
-        if task:
-            task.add_tag(tag)
-            print(f"Tag '{tag}' added to task {task_id}.")
-        else:
-            print("Task not found.")
-
-    def filter_by_tag(self):
-        if not self.current_user:
-            print("You need to log in first.")
-            return
-        tag = input("Enter tag to filter by: ").strip()
-        filtered_tasks = self.task_manager.filter_by_tag(tag)
-        if filtered_tasks:
-            for task in filtered_tasks:
-                print(task.get_info())
-        else:
-            print(f"No tasks found with tag '{tag}'.")
-
-    def archive_completed_tasks(self):
-        if not self.current_user:
-            print("You need to log in first.")
-            return
-        
-        self.task_manager.archive_completed_tasks()
-        print("Completed tasks archived.")
-
-    def display_archived_tasks(self):
-        if not self.current_user:
-            print("You need to log in first.")
-            return
-        
-        archived_tasks = self.task_manager.get_archived_tasks()
-        if archived_tasks:
-            print("Archived Tasks:")
-            for task in archived_tasks:
-                print(task.get_info())
-        else:
-            print("No archived tasks.")
 
     def display_task_counts(self):
         if not self.current_user:
             print("You need to log in first.")
             return
-        
-        total_tasks = self.task_manager.count_total_tasks()
-        completed_tasks = self.task_manager.count_completed_tasks()
-        
+        total_tasks = len(self.task_manager.tasks)
+        completed_tasks = len([task for task in self.task_manager.tasks.values() if task.status == "Completed"])
         print(f"Total Tasks: {total_tasks}")
         print(f"Completed Tasks: {completed_tasks}")
-        
-    def logout(self):
-        if self.current_user:
-            self.current_user = None
-            print("Logged out successfully.")
-        else:
-            print("No user is currently logged in.")
-
 
