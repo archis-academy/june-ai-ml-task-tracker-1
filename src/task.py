@@ -41,3 +41,9 @@ class Task:
     
     def add_comment(self, comment):
         self.comments.append(comment)
+
+    def mark_complete(self):
+        self.status = "Completed"
+
+    def mark_incomplete(self):
+        self.status = "Pending"

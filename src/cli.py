@@ -38,6 +38,10 @@ class CLI:
                 self.update_task()
             elif command == "delete_task":
                 self.delete_task()
+            elif command == "mark_complete":
+                self.mark_complete()
+            elif command == "mark_incomplete":
+                self.mark_incomplete()
             elif command == "exit":
                 break
             else:
@@ -156,6 +160,30 @@ class CLI:
                 print(task.get_info())
         else:
             print("No tasks found matching the keyword.")
+
+    def mark_complete(self):
+        if not self.current_user:
+            print("You need to log in first.")
+            return
+        task_id = int(input("Enter task ID to mark as complete: ").strip())
+        task = self.task_manager.tasks.get(task_id)
+        if task:
+            task.mark_complete()
+            print(f"Task {task_id} marked as complete.")
+        else:
+            print("Task not found.")
+
+    def mark_incomplete(self):
+        if not self.current_user:
+            print("You need to log in first.")
+            return
+        task_id = int(input("Enter task ID to mark as incomplete: ").strip())
+        task = self.task_manager.tasks.get(task_id)
+        if task:
+            task.mark_incomplete()
+            print(f"Task {task_id} marked as incomplete.")
+        else:
+            print("Task not found.")
 
     def logout(self):
         if self.current_user:
