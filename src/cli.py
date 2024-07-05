@@ -9,7 +9,7 @@ class CLI:
 
     def run(self):
         while True:
-            command = input("Enter command (register/login/logout/add_task/display_tasks/sort_tasks/filter_tasks/update_task/exit): ").strip().lower()
+            command = input("Enter command (register/login/logout/add_task/display_tasks/sort_tasks/filter_tasks/search_tasks/filter_status/filter_category/share_task/update_task/exit): ").strip().lower()
             if command == "register":
                 self.register()
             elif command == "login":
@@ -26,13 +26,19 @@ class CLI:
                 self.filter_tasks()
             elif command == "search_tasks":
                 self.search_tasks()
+            elif command == "filter_status":
+                self.filter_status()
+            elif command == "filter_category":
+                self.filter_category()
+            elif command == "share_task":
+                self.share_task()
             elif command == "update_task":
                 self.update_task()
             elif command == "exit":
                 break
             else:
                 print("Invalid command.")
-
+                
     def add_task(self):
         if not self.current_user:
             print("You need to log in first.")
@@ -95,6 +101,22 @@ class CLI:
             print("Task updated successfully.")
         else:
             print("Task not found.")
+
+    def share_task(self):
+        if not self.current_user:
+            print("You need to log in first.")
+            return
+        task_id = int(input("Enter task ID to share: ").strip())
+        username = input("Enter username to share with: ").strip()
+        user = self.user_manager.users.get(username)
+        if user:
+            task = self.task_manager.share_task(task_id, username)
+            if task:
+                print(f"Task shared with {username}.")
+            else:
+                print("Task not found.")
+        else:
+            print("User not found.")
 
     def logout(self):
         if self.current_user:

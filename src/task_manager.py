@@ -45,3 +45,11 @@ class TaskManager:
             if keyword.lower() in task.title.lower() or keyword.lower() in task.description.lower():
                 matched_tasks.append(task)
         return matched_tasks
+    
+    def share_task(self, task_id, username):
+        if task_id in self.tasks:
+            task = self.tasks[task_id]
+            task.share_with(username)
+            return task
+        else:
+            return None
