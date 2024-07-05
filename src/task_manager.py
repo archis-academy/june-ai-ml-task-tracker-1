@@ -1,4 +1,5 @@
 from task import Task
+from datetime import datetime, timedelta
 
 class TaskManager:
     def __init__(self):
@@ -68,3 +69,13 @@ class TaskManager:
             return True
         else:
             return False
+
+    def get_upcoming_tasks(self, days=7):
+        today = datetime.now().date()
+        end_date = today + timedelta(days=days)
+        upcoming_tasks = [task for task in self.tasks.values() if task.due_date.date() <= end_date and task.due_date.date() >= today]
+        return upcoming_tasks
+
+    def get_overdue_tasks(self):
+        overdue_tasks = [task for task in self.tasks.values() if task.due_date.date() < datetime.now().date() and task.status != "Completed"]
+        return overdue_tasks

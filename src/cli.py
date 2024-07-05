@@ -42,6 +42,10 @@ class CLI:
                 self.mark_complete()
             elif command == "mark_incomplete":
                 self.mark_incomplete()
+            elif command == "upcoming_tasks":
+                self.show_upcoming_tasks()
+            elif command == "overdue_tasks":
+                self.show_overdue_tasks()
             elif command == "exit":
                 break
             else:
@@ -185,6 +189,30 @@ class CLI:
         else:
             print("Task not found.")
 
+    def show_upcoming_tasks(self):
+        if not self.current_user:
+            print("You need to log in first.")
+            return
+        upcoming_tasks = self.task_manager.get_upcoming_tasks()
+        if upcoming_tasks:
+            print("Upcoming Tasks:")
+            for task in upcoming_tasks:
+                print(task.get_info())
+        else:
+            print("No upcoming tasks.")
+
+    def show_overdue_tasks(self):
+        if not self.current_user:
+            print("You need to log in first.")
+            return
+        overdue_tasks = self.task_manager.get_overdue_tasks()
+        if overdue_tasks:
+            print("Overdue Tasks:")
+            for task in overdue_tasks:
+                print(task.get_info())
+        else:
+            print("No overdue tasks.")
+            
     def logout(self):
         if self.current_user:
             self.current_user = None
