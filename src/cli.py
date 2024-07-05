@@ -9,7 +9,7 @@ class CLI:
 
     def run(self):
         while True:
-            command = input("Enter command (register/login/logout/add_task/display_tasks/sort_tasks/filter_tasks/search_tasks/filter_status/filter_category/share_task/update_task/exit): ").strip().lower()
+            command = input("Enter command (register/login/logout/add_task/display_tasks/sort_tasks/filter_tasks/search_tasks/filter_status/filter_category/share_task/add_comment/update_task/exit): ").strip().lower()
             if command == "register":
                 self.register()
             elif command == "login":
@@ -32,13 +32,15 @@ class CLI:
                 self.filter_category()
             elif command == "share_task":
                 self.share_task()
+            elif command == "add_comment":
+                self.add_comment()
             elif command == "update_task":
                 self.update_task()
             elif command == "exit":
                 break
             else:
                 print("Invalid command.")
-                
+
     def add_task(self):
         if not self.current_user:
             print("You need to log in first.")
@@ -117,6 +119,18 @@ class CLI:
                 print("Task not found.")
         else:
             print("User not found.")
+
+    def add_comment(self):
+        if not self.current_user:
+            print("You need to log in first.")
+            return
+        task_id = int(input("Enter task ID to comment on: ").strip())
+        comment = input("Enter your comment: ").strip()
+        task = self.task_manager.add_comment_to_task(task_id, comment)
+        if task:
+            print(f"Comment added to task {task_id}.")
+        else:
+            print("Task not found.")
 
     def logout(self):
         if self.current_user:

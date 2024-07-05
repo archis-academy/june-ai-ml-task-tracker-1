@@ -25,9 +25,10 @@ class Task:
             f"Status: {self.status}\n"
             f"User ID: {self.user_id}\n"
             f"Category: {self.category}\n"
-            f"Shared With: {', '.join(self.shared_with) if self.shared_with else 'No one'}\n")
+            f"Shared With: {', '.join(self.shared_with) if self.shared_with else 'No one'}\n"
+            f"Comments: {', '.join(self.comments) if self.comments else 'No comments'}\n")
         return info
-
+    
     def share_with(self, username):
         if username not in self.shared_with:
             self.shared_with.append(username)
@@ -37,3 +38,6 @@ class Task:
 
     def get_priority(self):
         return self.priority
+    
+    def add_comment(self, comment):
+        self.comments.append(comment)

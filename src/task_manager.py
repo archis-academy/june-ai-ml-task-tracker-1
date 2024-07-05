@@ -53,3 +53,11 @@ class TaskManager:
             return task
         else:
             return None
+
+    def add_comment_to_task(self, task_id, comment):
+        if task_id in self.tasks:
+            task = self.tasks[task_id]
+            task.add_comment(comment)
+            return task
+        else:
+            return None
