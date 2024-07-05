@@ -152,11 +152,19 @@ class CLI:
             print("You need to log in first.")
             return
         task_id = int(input("Enter task ID to delete: ").strip())
-        success = self.task_manager.delete_task(task_id)
-        if success:
-            print(f"Task {task_id} deleted.")
-        else:
+        task = self.task_manager.tasks.get(task_id)
+        if not task:
             print("Task not found.")
+            return
+        confirmation = input(f"Are you sure you want to delete task {task_id} ('{task.title}')? (yes/no): ").strip().lower()
+        if confirmation == 'yes':
+            success = self.task_manager.delete_task(task_id)
+            if success:
+                print(f"Task {task_id} deleted.")
+            else:
+                print("Task not found.")
+        else:
+            print("Deletion canceled.")
 
     def search_tasks(self):
         if not self.current_user:
