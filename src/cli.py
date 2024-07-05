@@ -46,6 +46,11 @@ class CLI:
                 self.show_upcoming_tasks()
             elif command == "overdue_tasks":
                 self.show_overdue_tasks()
+                self.show_overdue_tasks()
+            elif command == "tag_task":
+                self.tag_task()
+            elif command == "filter_by_tag":
+                self.filter_by_tag()
             elif command == "exit":
                 break
             else:
@@ -212,7 +217,31 @@ class CLI:
                 print(task.get_info())
         else:
             print("No overdue tasks.")
-            
+    def tag_task(self):
+        if not self.current_user:
+            print("You need to log in first.")
+            return
+        task_id = int(input("Enter task ID to tag: ").strip())
+        tag = input("Enter tag to add: ").strip()
+        task = self.task_manager.tasks.get(task_id)
+        if task:
+            task.add_tag(tag)
+            print(f"Tag '{tag}' added to task {task_id}.")
+        else:
+            print("Task not found.")
+
+    def filter_by_tag(self):
+        if not self.current_user:
+            print("You need to log in first.")
+            return
+        tag = input("Enter tag to filter by: ").strip()
+        filtered_tasks = self.task_manager.filter_by_tag(tag)
+        if filtered_tasks:
+            for task in filtered_tasks:
+                print(task.get_info())
+        else:
+            print(f"No tasks found with tag '{tag}'.")
+
     def logout(self):
         if self.current_user:
             self.current_user = None
@@ -221,9 +250,3 @@ class CLI:
             print("No user is currently logged in.")
 
 
-
-if __name__ == "__main__":
-    task_manager = TaskManager()
-    user_manager = UserManager()
-    cli = CLI(task_manager, user_manager)
-    cli.run()

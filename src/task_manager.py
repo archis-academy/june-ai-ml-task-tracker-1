@@ -79,3 +79,6 @@ class TaskManager:
     def get_overdue_tasks(self):
         overdue_tasks = [task for task in self.tasks.values() if task.due_date.date() < datetime.now().date() and task.status != "Completed"]
         return overdue_tasks
+    
+    def filter_by_tag(self, tag):
+        return [task for task in self.tasks.values() if task.has_tag(tag)]

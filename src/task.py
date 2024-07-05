@@ -65,3 +65,12 @@ class Task:
                 self.subtasks.remove(subtask)
                 return True
         return False
+    
+    def add_tag(self, tag):
+        self.tags.add(tag.lower()) 
+
+    def remove_tag(self, tag):
+        self.tags.discard(tag.lower()) 
+
+    def has_tag(self, tag):
+        return tag.lower() in self.tags
