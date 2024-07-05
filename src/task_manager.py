@@ -93,3 +93,16 @@ class TaskManager:
 
     def get_archived_tasks(self):
         return list(self.archived_tasks.values())
+    
+    def count_total_tasks(self):
+        return len(self.tasks) + len(self.archived_tasks)
+
+    def count_completed_tasks(self):
+        completed_count = 0
+        for task in self.tasks.values():
+            if task.status == "Completed":
+                completed_count += 1
+        for task in self.archived_tasks.values():
+            if task.status == "Completed":
+                completed_count += 1
+        return completed_count

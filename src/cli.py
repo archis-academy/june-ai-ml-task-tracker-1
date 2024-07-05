@@ -271,6 +271,17 @@ class CLI:
         else:
             print("No archived tasks.")
 
+    def display_task_counts(self):
+        if not self.current_user:
+            print("You need to log in first.")
+            return
+        
+        total_tasks = self.task_manager.count_total_tasks()
+        completed_tasks = self.task_manager.count_completed_tasks()
+        
+        print(f"Total Tasks: {total_tasks}")
+        print(f"Completed Tasks: {completed_tasks}")
+        
     def logout(self):
         if self.current_user:
             self.current_user = None
