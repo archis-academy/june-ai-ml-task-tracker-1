@@ -61,3 +61,10 @@ class TaskManager:
             return task
         else:
             return None
+
+    def delete_task(self, task_id):
+        if task_id in self.tasks:
+            del self.tasks[task_id]
+            return True
+        else:
+            return False

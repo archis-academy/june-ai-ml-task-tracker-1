@@ -36,6 +36,8 @@ class CLI:
                 self.add_comment()
             elif command == "update_task":
                 self.update_task()
+            elif command == "delete_task":
+                self.delete_task()
             elif command == "exit":
                 break
             else:
@@ -132,12 +134,16 @@ class CLI:
         else:
             print("Task not found.")
 
-    def logout(self):
-        if self.current_user:
-            self.current_user = None
-            print("Logged out successfully.")
+    def delete_task(self):
+        if not self.current_user:
+            print("You need to log in first.")
+            return
+        task_id = int(input("Enter task ID to delete: ").strip())
+        success = self.task_manager.delete_task(task_id)
+        if success:
+            print(f"Task {task_id} deleted.")
         else:
-            print("No user is currently logged in.")
+            print("Task not found.")
 
     def search_tasks(self):
         if not self.current_user:
@@ -150,6 +156,15 @@ class CLI:
                 print(task.get_info())
         else:
             print("No tasks found matching the keyword.")
+
+    def logout(self):
+        if self.current_user:
+            self.current_user = None
+            print("Logged out successfully.")
+        else:
+            print("No user is currently logged in.")
+
+
 
 if __name__ == "__main__":
     task_manager = TaskManager()
