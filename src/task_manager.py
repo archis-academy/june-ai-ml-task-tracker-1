@@ -4,6 +4,8 @@ from datetime import datetime, timedelta
 class TaskManager:
     def __init__(self):
         self.tasks = {}
+        self.archived_tasks = {}  
+        self.next_id = 1
 
     def add_task(self, title, description, status="Pending", priority="Normal", due_date=None, user_id=None, category=None):
         task = Task(self.next_id, title, description, status, priority, due_date, user_id, category)
@@ -82,3 +84,12 @@ class TaskManager:
     
     def filter_by_tag(self, tag):
         return [task for task in self.tasks.values() if task.has_tag(tag)]
+    
+    def archive_completed_tasks(self):
+        tasks_to_archive = [task for task in self.tasks.values() if task.status == "Completed"]
+        for task in tasks_to_archive:
+            self.archived_tasks[task.id] = task
+            del self.tasks[task.id]
+
+    def get_archived_tasks(self):
+        return list(self.archived_tasks.values())

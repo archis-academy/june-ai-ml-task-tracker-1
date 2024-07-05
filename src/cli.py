@@ -250,6 +250,27 @@ class CLI:
         else:
             print(f"No tasks found with tag '{tag}'.")
 
+    def archive_completed_tasks(self):
+        if not self.current_user:
+            print("You need to log in first.")
+            return
+        
+        self.task_manager.archive_completed_tasks()
+        print("Completed tasks archived.")
+
+    def display_archived_tasks(self):
+        if not self.current_user:
+            print("You need to log in first.")
+            return
+        
+        archived_tasks = self.task_manager.get_archived_tasks()
+        if archived_tasks:
+            print("Archived Tasks:")
+            for task in archived_tasks:
+                print(task.get_info())
+        else:
+            print("No archived tasks.")
+
     def logout(self):
         if self.current_user:
             self.current_user = None
