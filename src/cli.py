@@ -53,6 +53,10 @@ class CLI:
                 self.show_overdue_tasks()
             elif command == "task_counts":
                 self.display_task_counts()
+            elif command == "save":
+                self.save_tasks()
+            elif command == "load":
+                self.load_tasks()
             elif command == "exit":
                 break
             else:
@@ -310,3 +314,10 @@ class CLI:
         print(f"Total Tasks: {total_tasks}")
         print(f"Completed Tasks: {completed_tasks}")
 
+    def save_tasks(self):
+        filename = input("Enter filename to save tasks: ").strip()
+        self.task_manager.save_to_file(filename)
+
+    def load_tasks(self):
+        filename = input("Enter filename to load tasks from: ").strip()
+        self.task_manager.load_from_file(filename)

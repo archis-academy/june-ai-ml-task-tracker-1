@@ -1,5 +1,6 @@
 from task import Task
 from datetime import datetime, timedelta
+import json
 
 class TaskManager:
     def __init__(self):
@@ -106,3 +107,22 @@ class TaskManager:
             if task.status == "Completed":
                 completed_count += 1
         return completed_count
+    
+    def save_to_file(self, filename):
+        data = {
+            'tasks': [task.__dict__ for task in self.tasks.values()],
+            'archived_tasks': [task.__dict__ for task in self.archived_tasks.values()]
+        }
+        with open(filename, 'w') as file:
+            json.dump(data, file)
+        print("Tasks saved to file.")
+
+    def load_from_file(self, filename):
+        try:
+            with open(filename, 'r') as file:
+                data = json.load(file)
+                self.tasks = {task['id']: Task(**task) for task in data['tasks']}
+                self.archived_tasks = {task['id']: Task(**task) for task in data['archived_tasks']}
+            print("Tasks loaded from file.")
+        except FileNotFoundError:
+            print("File not found.")
